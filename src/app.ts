@@ -6,7 +6,9 @@ import { User } from "./modules/user.js";
 import { Order } from "./modules/order.js";
 import { Product } from "./modules/product.js";
 import mongoose from "mongoose";
-import { log } from "node:console";
+import dotenv from "dotenv";
+dotenv.config();
+
 
 const MONGODB_URI =
   'mongodb+srv://indradb:123@cluster0.m863viu.mongodb.net/?appName=Cluster0';

@@ -1,6 +1,9 @@
 import express from 'express'
 import { upload } from "../utils/multer.js";
 import { getProducts, postAddProduct } from '../controllers/product.controller.js';
+import { createPaymentLink } from '../controllers/paymet.controller.js';
+
+
 
 const router = express.Router();
 
@@ -12,6 +15,7 @@ router.post(
   postAddProduct
 );
 
+router.post("/create-payment-link", createPaymentLink);
 
 
 export default router;
