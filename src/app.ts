@@ -1,67 +1,53 @@
-import express,{Request,Response} from "express";
-import multer from "multer";
-import path from "path";
-import prductRouter from "./routes/product.route.js"; 
-import { User } from "./modules/user.js";
-import { Order } from "./modules/order.js";
-import { Product } from "./modules/product.js";
-import mongoose from "mongoose";
+import express, { Application as ExpressApp } from "express";
 import dotenv from "dotenv";
+import cors from "cors";
+import mongoose from "mongoose";
+
+import feedRouter from "./domains/social-media/routes/feed.routes.js";
+
 dotenv.config();
 
+class Application {
+  public app: ExpressApp;
+  private port: number;
+  private mongoUri: string;
 
-const MONGODB_URI =
-  'mongodb+srv://indradb:123@cluster0.m863viu.mongodb.net/?appName=Cluster0';
+  constructor() {
+    this.app = express();
+    this.port = parseInt(process.env.PORT || "3000", 10);
+    this.mongoUri = process.env.MONGODB_URI || "";
 
-
-const app = express();
-const port = 3000;
-
-
-
-// app.get("/", (req:Request, res:Response) => {
-//   const name = req.query;
-//   res.json({
-//     message: "Indra the great",
-//   });
-// });
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.use("/images", express.static("images"));
-
-app.use('/',prductRouter)
-
-
-
-
-// app.listen(port, () => {
-//   return console.log(`Express is listening at http://localhost:${port}`);
-// });
-
-
-
-const startServer = async () => {
-  try {
-    await mongoose.connect(MONGODB_URI);
-    app.listen(3000);
-    console.log("MongoDB connected successfully!!!");
-    console.log("server started at 3000");
-    
-  } catch (err) {
-    console.log(err);
+    this.initializeMiddleware();
+    this.initializeRoutes();
   }
-};
 
-startServer()
+  private initializeMiddleware(): void {
+    this.app.use(cors());
+    this.app.use(express.json());
+  }
 
+  private initializeRoutes(): void {
+    this.app.use("/feed", feedRouter);
+  }
 
-mongoose
-  .connect(MONGODB_URI)
-  .then(result => {
-    app.listen(3001);
-  })
-  .catch(err => {
-    console.log(err);
-  });
+  private async connectDatabase(): Promise<void> {
+    try {
+      await mongoose.connect(this.mongoUri);
+      console.log("MongoDB connected");
+    } catch (error) {
+      console.error("MongoDB connection failed");
+    }
+  }
+
+  public async start(): Promise<void> {
+    await this.connectDatabase();
+    this.app.listen(this.port, () => {
+      console.log(`Server listening on http://localhost:${this.port}`);
+    });
+  }
+}
+
+const application = new Application();
+application.start()
+
+export default application.app;
