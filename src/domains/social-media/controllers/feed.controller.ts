@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { Service,Container } from "typedi";
 import { PostService } from "../services/post.service.js";
 import Joi from "joi";
-import mongoose, { Mongoose } from "mongoose";
 
 
 const createPostSchema = Joi.object({
@@ -19,12 +18,9 @@ const updatePostSchema = Joi.object({
 export class FeedController {
   private postService = Container.get(PostService);
 
-   getPostsAll = async (req: Request, res: Response) => {
+  getPostsAll = async (req: Request, res: Response) => {
     try {
-     
-
       const posts = await this.postService.getPostsAll();
-
       return res.json({ posts });
     } catch (e) {
       console.error(e);

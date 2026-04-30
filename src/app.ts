@@ -2,9 +2,12 @@ import express, { Application as ExpressApp } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import mongoose from "mongoose";
-import {Container} from "typedi";
-import  {FeedRoutes}  from "./domains/social-media/routes/feed.routes.js"
-import 'reflect-metadata'
+import { Container } from "typedi";
+import { FeedRoutes } from "./domains/social-media/routes/feed.routes.js";
+import "reflect-metadata";
+import { UserRoutes } from "./domains/social-media/routes/user.routes.js";
+import { AuthRoutes } from "./domains/social-media/routes/auth.routes.js";
+
 
 dotenv.config();
 
@@ -28,8 +31,13 @@ class Application {
   }
 
   private initializeRoutes(): void {
-   const feedRoutes = Container.get(FeedRoutes);
-   this.app.use("/feed", feedRoutes.router);
+    const feedRoutes = Container.get(FeedRoutes);
+    const userRoutes = Container.get(UserRoutes);
+    const authRoutes = Container.get(AuthRoutes);
+
+    this.app.use("/feed", feedRoutes.router);
+    this.app.use("/user", userRoutes.router);
+    this.app.use("/auth", authRoutes.router);
   }
 
   private async connectDatabase(): Promise<void> {
@@ -51,6 +59,6 @@ class Application {
 }
 
 const application = new Application();
-application.start()
+application.start();
 
 export default application.app;

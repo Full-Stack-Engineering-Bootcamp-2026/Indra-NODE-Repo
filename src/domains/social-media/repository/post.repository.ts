@@ -16,7 +16,7 @@ export class PostRepository {
     return Post.findById(id);
   }
 
-  async create(data: any) {
+  async create(data: postCreateDto) {
     const post = new Post(data);
     return post.save();
   }
